@@ -43,7 +43,7 @@ export default class TSVFileReader implements FileReaderInterface {
         title,
         description,
         publishingDate: new Date(publishingDate),
-        genre: Genre[genre as 'COMEDY' | 'CRIME' | 'DOCUMENTARY' | 'DRAMA' | 'HORROR' | 'FAMILY' | 'ROMANCE' | 'SCIFI' | 'THRILLER'],
+        genre: genre as Genre,
         releaseYear: +releaseYear,
         rating: +rating,
         previewPath,

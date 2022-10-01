@@ -4,7 +4,7 @@ export type TGenre = typeof GENRE_ARRAY[number];
 
 export function getGenre(value: string): TGenre | never {
   if (!GENRE_ARRAY.includes(value)) {
-    throw new Error();
+    throw new Error('Unrecognised genre');
   }
   return value;
 }

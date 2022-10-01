@@ -1,4 +1,4 @@
-import { CliCommandInterface } from '../cli-command/cli-command.interface.js';
+import {CliCommandInterface} from '../cli-command/cli-command.interface.js';
 
 type ParsedCommand = Record<string, string[]>;
 
@@ -27,16 +27,17 @@ export default class CLIApplication {
   }
 
   private parseCommand(cliArguments: string[]): ParsedCommand {
+    const parsedCommand: ParsedCommand = {};
     let command = '';
 
-    return cliArguments.reduce((parsedCommand, arg) => {
+    return cliArguments.reduce((accumulator, arg) => {
       if (arg.startsWith('--')) {
-        parsedCommand[arg] = [];
+        accumulator[arg] = [];
         command = arg;
       } else if (command && arg) {
-        parsedCommand[command].push(arg);
+        accumulator[command].push(arg);
       }
-      return parsedCommand;
-    }, {} as ParsedCommand);
+      return accumulator;
+    }, parsedCommand);
   }
 }

@@ -1,7 +1,7 @@
-import { readFileSync } from 'fs';
-import { FileReaderInterface } from './file-reader.interface.js';
-import { Movie } from '../../types/movie.type.js';
-import { Genre } from '../../types/genre-type.enum.js';
+import {readFileSync} from 'fs';
+import {FileReaderInterface} from './file-reader.interface.js';
+import {Movie} from '../../types/movie.type.js';
+import {getGenre} from '../../types/genre.type.js';
 
 export default class TSVFileReader implements FileReaderInterface {
   private rawData = '';
@@ -43,7 +43,7 @@ export default class TSVFileReader implements FileReaderInterface {
         title,
         description,
         publishingDate: new Date(publishingDate),
-        genre: genre as Genre,
+        genre: getGenre(genre),
         releaseYear: +releaseYear,
         rating: +rating,
         previewPath,

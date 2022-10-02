@@ -1,20 +1,19 @@
 import TSVFileReader from '../common/file-reader/tsv-file-reader.js';
 import {CliCommandInterface} from './cli-command.interface.js';
-import chalk from 'chalk';
+import {createMovie, getErrorMessage} from '../utils/common-functions.js';
 
 export default class ImportCommand implements CliCommandInterface {
   readonly name = '--import';
 
-  execute(filename: string): void {
+  public async execute(filename: string): Promise<void> {
     const fileReader = new TSVFileReader(filename.trim());
+    fileReader.on('line', (line) => console.log(createMovie(line)));
+    fileReader.on('end', (count) => console.log(`${count} rows imported.`));
 
     try {
-      fileReader.read();
-      console.log(fileReader.toArray());
+      await fileReader.read();
     } catch (err) {
-      if (err instanceof Error) {
-        console.log(chalk.bgRed(chalk.black(`Не удалось импортировать данные из файла из-за ошибки: «${err.message}»`)));
-      }
+      console.log(`Can't read the file: ${getErrorMessage(err)}`);
     }
   }
 }

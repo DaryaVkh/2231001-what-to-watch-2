@@ -1,61 +1,31 @@
-import {readFileSync} from 'fs';
+import {createReadStream} from 'fs';
 import {FileReaderInterface} from './file-reader.interface.js';
-import {Movie} from '../../types/movie.type.js';
-import {getGenre} from '../../types/genre.type.js';
+import EventEmitter from 'events';
 
-export default class TSVFileReader implements FileReaderInterface {
-  private rawData = '';
-
-  constructor(public filename: string) {}
-
-  read(): void {
-    this.rawData = readFileSync(this.filename, {encoding: 'utf8'});
+export default class TSVFileReader extends EventEmitter implements FileReaderInterface {
+  constructor(public filename: string) {
+    super();
   }
 
-  toArray(): Movie[] {
-    if (!this.rawData) {
-      return [];
+  async read(): Promise<void> {
+    const stream = createReadStream(this.filename, {encoding: 'utf-8'});
+
+    let lineRead = '';
+    let endLinePosition = -1;
+    let importedRowCount = 0;
+
+    for await (const chunk of stream) {
+      lineRead += chunk.toString();
+
+      while ((endLinePosition = lineRead.indexOf('\n')) >= 0) {
+        const completeRow = lineRead.slice(0, endLinePosition + 1);
+        lineRead = lineRead.slice(++endLinePosition);
+        importedRowCount++;
+
+        this.emit('line', completeRow);
+      }
     }
 
-    return this.rawData
-      .split('\n')
-      .filter((row) => row.trim() !== '')
-      .map((line) => line.split('\t'))
-      .map(([
-        title,
-        description,
-        publishingDate,
-        genre,
-        releaseYear,
-        rating,
-        previewPath,
-        moviePath,
-        actors,
-        director,
-        durationInMinutes,
-        name,
-        email,
-        avatarPath,
-        posterPath,
-        backgroundImagePath,
-        backgroundColor
-      ]) => ({
-        title,
-        description,
-        publishingDate: new Date(publishingDate),
-        genre: getGenre(genre),
-        releaseYear: +releaseYear,
-        rating: +rating,
-        previewPath,
-        moviePath,
-        actors: actors.split(';'),
-        director,
-        durationInMinutes: +durationInMinutes,
-        commentsCount: 0,
-        user: {email, name, avatarPath},
-        posterPath,
-        backgroundImagePath,
-        backgroundColor
-      }));
+    this.emit('end', importedRowCount);
   }
 }

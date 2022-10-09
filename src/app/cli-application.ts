@@ -27,17 +27,16 @@ export default class CLIApplication {
   }
 
   private parseCommand(cliArguments: string[]): ParsedCommand {
-    const parsedCommand: ParsedCommand = {};
     let command = '';
 
-    return cliArguments.reduce((accumulator, arg) => {
+    return cliArguments.reduce<ParsedCommand>((parsedCommand, arg) => {
       if (arg.startsWith('--')) {
-        accumulator[arg] = [];
+        parsedCommand[arg] = [];
         command = arg;
       } else if (command && arg) {
-        accumulator[command].push(arg);
+        parsedCommand[command].push(arg);
       }
-      return accumulator;
-    }, parsedCommand);
+      return parsedCommand;
+    }, {});
   }
 }

@@ -1,5 +1,4 @@
 import {getGenre} from '../types/genre.type.js';
-import {Movie} from '../types/movie.type.js';
 
 export const createMovie = (row: string) => {
   const tokens = row.replace('\n', '').split('\t');
@@ -27,19 +26,19 @@ export const createMovie = (row: string) => {
     description,
     publishingDate: new Date(publishingDate),
     genre: getGenre(genre),
-    releaseYear: +releaseYear,
-    rating: +rating,
+    releaseYear: Number(releaseYear),
+    rating: Number(rating),
     previewPath,
     moviePath,
     actors: actors.split(';'),
     director,
-    durationInMinutes: +durationInMinutes,
+    durationInMinutes: Number(durationInMinutes),
     commentsCount: 0,
     user: {email, name: userName, avatarPath},
     posterPath,
     backgroundImagePath,
     backgroundColor
-  } as Movie;
+  };
 };
 
 export function getErrorMessage(error: unknown): string {

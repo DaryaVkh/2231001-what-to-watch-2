@@ -13,7 +13,7 @@ export default class TSVFileWriter implements FileWriterInterface {
     });
   }
 
-  public async write(row: string): Promise<void> {
+  async write(row: string): Promise<void> {
     if (!this.stream.write(`${row}\n`)) {
       return new Promise((resolve) => {
         this.stream.once('drain', () => resolve());

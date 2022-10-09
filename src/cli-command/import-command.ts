@@ -5,7 +5,7 @@ import {createMovie, getErrorMessage} from '../utils/common-functions.js';
 export default class ImportCommand implements CliCommandInterface {
   readonly name = '--import';
 
-  public async execute(filename: string): Promise<void> {
+  async execute(filename: string): Promise<void> {
     const fileReader = new TSVFileReader(filename.trim());
     fileReader.on('line', (line) => console.log(createMovie(line)));
     fileReader.on('end', (count) => console.log(`${count} rows imported.`));

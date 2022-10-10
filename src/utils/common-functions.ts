@@ -40,7 +40,3 @@ export const createMovie = (row: string) => {
     backgroundColor
   };
 };
-
-export function getErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : '';
-}

@@ -41,6 +41,6 @@ export const createMovie = (row: string) => {
   };
 };
 
-export function getErrorMessage(error: Error | string): string {
+export function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : '';
 }

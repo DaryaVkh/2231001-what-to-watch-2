@@ -1,6 +1,6 @@
 import TSVFileReader from '../common/file-reader/tsv-file-reader.js';
 import {CliCommandInterface} from './cli-command.interface.js';
-import {createMovie, getErrorMessage} from '../utils/common-functions.js';
+import {createMovie} from '../utils/common-functions.js';
 
 export default class ImportCommand implements CliCommandInterface {
   readonly name = '--import';
@@ -13,7 +13,9 @@ export default class ImportCommand implements CliCommandInterface {
     try {
       await fileReader.read();
     } catch (err) {
-      console.log(`Can't read the file: ${getErrorMessage(err)}`);
+      if (err instanceof Error) {
+        console.log(`Can't read the file: ${err.message}`);
+      }
     }
   }
 }

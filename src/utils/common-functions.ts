@@ -1,4 +1,5 @@
 import {getGenre} from '../types/genre.type.js';
+import crypto from 'crypto';
 
 export const createMovie = (row: string) => {
   const tokens = row.replace('\n', '').split('\t');
@@ -40,3 +41,5 @@ export const createMovie = (row: string) => {
     backgroundColor
   };
 };
+
+export const createSHA256 = (line: string, salt: string): string => crypto.createHmac('sha256', salt).update(line).digest('hex');

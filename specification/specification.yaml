@@ -17,7 +17,7 @@ paths:
     post:
       tags:
         - users
-      summary: Создание новое пользователя
+      summary: Создание нового пользователя
       description: Регистрирует нового пользователя.
 
       requestBody:

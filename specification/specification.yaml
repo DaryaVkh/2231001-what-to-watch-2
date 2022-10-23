@@ -1,0 +1,811 @@
+openapi: 3.0.3
+info:
+  title: API сервер для личного проекта «Что посмотреть».
+  description: |-
+    * Список ресурсов и маршрутов сервера «Что посмотреть».
+  version: 1.0.0
+tags:
+  - name: users
+    description: Действия с пользователем.
+  - name: movies
+    description: Действия с фильмами.
+  - name: comments
+    description: Действия с комментариями.
+
+paths:
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Создание новое пользователя
+      description: Регистрирует нового пользователя.
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+        required: true
+
+      responses:
+        "201":
+          description: Пользователь зарегистрирован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+
+        "409":
+          description: Пользователь с таким email уже существует.
+
+
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Вход в закрытую часть приложения
+      description: Авторизует пользователя на основе логина и пароля.
+
+      requestBody:
+        required: true
+        description: Логин и пароль авторизующегося пользователя.
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                login:
+                  type: string
+                  example: dashav@mail.ru
+
+                password:
+                  type: string
+                  example: 123456
+
+      responses:
+        "201":
+          description: >
+            Успешно авторизован.
+            Токен будет возвращен в куки с названием `SESSIONID`. Клиент использует этот токен для отправки любых запросов. Токен передаётся в заголовках.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: SESSIONID=abcde12345; Path=/; HttpOnly
+
+        "403":
+          description: Неправильный логин или пароль.
+
+
+    get:
+      tags:
+        - users
+      summary: Проверка состояния пользователя
+      description: Возвращает информацию по авторизованному пользователю.
+
+      parameters:
+        - in: cookie
+          name: SESSIONID
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Успешно. Информация о пользователе.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+
+
+  /users/logout:
+    delete:
+      tags:
+        - users
+      summary: Выход из закрытой части приложения
+      description: Завершение пользовательского сеанса.
+
+      parameters:
+        - in: cookie
+          name: SESSIONID
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "204":
+          description: Успешно.
+
+        "403":
+          description: Неверный токен. Завершение пользовательского сеанса невозможно.
+
+
+  /movies/create:
+    post:
+      tags:
+        - movies
+      summary: Добавление нового фильма
+      description: Добавляет новый фильм.
+
+      requestBody:
+        description: Информация для добавления нового фильма.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createMovie'
+        required: true
+
+      responses:
+        "201":
+          description: Фильм добавлен. Объект фильма.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+
+        "400":
+          description: Не удалось обработать запрос, так как он представлен в неправильном формате или является некорректным.
+
+
+  /movies/{movieId}:
+    get:
+      tags:
+        - movies
+      summary: Получение детальной информации по фильму
+      description: Получает детальную информацию по определенному фильму.
+
+      parameters:
+        - in: path
+          name: movieId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Movie id to get.
+
+      responses:
+        "200":
+          description: Успешно. Детальная информация по фильму.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+
+        "404":
+          description: Фильма с данным id не существует.
+
+    patch:
+      tags:
+        - movies
+      summary: Редактирование карточки фильма
+      description: Редактирует карточку фильма, созданную пользователем.
+
+      parameters:
+        - in: path
+          name: movieId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Movie id to update.
+
+      requestBody:
+        description: Полный набор информации и идентификатор редактируемого фильма.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateMovie'
+        required: true
+
+      responses:
+        "200":
+          description: Фильм обновлен. Новый объект фильма.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+
+        "400":
+          description: Не удалось обработать запрос, так как он представлен в неправильном формате или является некорректным.
+
+        "404":
+          description: Фильма с данным id не существует.
+
+
+    delete:
+      tags:
+        - movies
+      summary: Удаление карточки фильма
+      description: Удаляет карточку фильма, созданную пользователем
+
+      parameters:
+        - in: path
+          name: movieId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Movie id to delete.
+
+      requestBody:
+        description: Id пользователя, пытающегося удалить фильм.
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+
+      responses:
+        "204":
+          description: Фильм успешно удален.
+
+        "403":
+          description: Запрещено удаление фильма данным пользователем.
+
+        "404":
+          description: Фильма с данным id не существует.
+
+  /movies?limit=60&genre=comedy:
+    get:
+      tags:
+        - movies
+      summary: Получение списка фильмов
+      description: Возвращает список фильмов (по умолчанию не больше 60).
+
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+
+        - in: query
+          name: genre
+          schema:
+            type: string
+            enum: [ comedy, crime, documentary, drama, horror, family, romance, scifi, thriller ]
+            example: comedy
+
+      responses:
+        "200":
+          description: Успешно. Список фильмов.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/movieListItem'
+
+        "400":
+          description: Не удалось обработать запрос, так как он представлен в неправильном формате или является некорректным.
+
+
+  /movies/promo:
+    get:
+      tags:
+        - movies
+      summary: Получение промо-фильма
+      description: Получение детальной информации по промо фильму.
+
+      responses:
+        "200":
+          description: Успешно. Детальная информация по промо фильму.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+
+
+  /movies/to_watch:
+    get:
+      tags:
+        - movies
+      summary: Получить список фильмов «К просмотру»
+      description: Возвращает список фильмов, добавленных к просмотру
+
+      requestBody:
+        description: Id пользователя, запрашивающего фильмы к просмотру.
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+
+              required:
+                - userId
+
+      responses:
+        "200":
+          description: Успешно. Фильмы, добавленные к просмотру.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/movieListItem'
+
+        "401":
+          description: Пользователь не авторизован. Запрос отклонен.
+
+
+    post:
+      tags:
+        - movies
+      summary: Добавить фильм в список "К просмотру"
+      description: Добавляет фильм в список "К просмотру"
+
+      requestBody:
+        description: Id пользователя, добавляющего фильм к просмотру, и id фильма, который добавляют в список.
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+                  example: 6329c3d6a04ab1061c6425ea
+
+                movieId:
+                  type: string
+                  format: uuid
+                  example: 6329c3d6a04ab1061c6425ease8u342
+
+              required:
+                - userId
+                - movieId
+
+      responses:
+        "201":
+          description: Успешно. Фильм добавлен в список "К просмотру".
+
+        "401":
+          description: Пользователь не авторизован. Запрос отклонен.
+
+
+    delete:
+      tags:
+        - movies
+      summary: Удалить фильм из списка "К просмотру"
+      description: Удаляет фильм из списка "К просмотру"
+
+      requestBody:
+        description: Id пользователя, удаляющего фильм из списка "К просмотру", и id этого фильма.
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+                  example: 6329c3d6a04ab1061c6425ea
+
+                movieId:
+                  type: string
+                  format: uuid
+                  example: 6329c3d6a04ab1061c6425ease8u342
+
+              required:
+                - userId
+                - movieId
+
+      responses:
+        "204":
+          description: Успешно. Фильм удален из списка "К просмотру".
+
+        "401":
+          description: Пользователь не авторизован. Запрос отклонен.
+
+
+  /movies/{movieId}/comments:
+    get:
+      tags:
+        - comments
+      summary: Получить список комментариев для определённого фильма
+      description: Возвращает список комментариев для определенного фильма.
+
+      parameters:
+        - in: path
+          name: movieId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Movie id to get comments.
+
+      responses:
+        "200":
+          description: Успешно. Список комментариев к фильму.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+
+        "404":
+          description: Фильм с таким id не существует.
+
+
+  /comments:
+    post:
+      tags:
+        - comments
+      summary: Добавить новый комментарий к определённому фильму
+      description: Добавляет новый комментарий к определенному фильму.
+
+      requestBody:
+        description: Id фильма, к которому добавляют комментарий, и сам комментарий.
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/comment'
+                - type: object
+                  properties:
+                    movieId:
+                      type: string
+                      format: uuid
+                      example: 6329c3d6a04ab1061c6425ea
+                  required:
+                    - movieId
+
+      responses:
+        "200":
+          description: Успешно. Комментарий добавлен.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+
+        "400":
+          description: Не удалось обработать запрос, так как он представлен в неправильном формате или является некорректным.
+
+        "401":
+          description: Пользователь не авторизован. Запрос отклонен.
+
+        "404":
+          description: Фильм с данным id не найден.
+
+
+components:
+  schemas:
+    createUser:
+      type: object
+
+      properties:
+        email:
+          type: string
+          example: dashav@mail.ru
+
+        name:
+          type: string
+          example: Darya
+
+        password:
+          type: string
+          example: 123456
+
+    user:
+      type: object
+
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 6329c3d6a04ab1061c6425ea
+
+        email:
+          type: string
+          example: dashav@mail.ru
+
+    createMovie:
+      type: object
+
+      properties:
+        title:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Голодные игры
+
+        description:
+          type: string
+          minLength: 20
+          maxLength: 1024
+          example: Деспотичное государство ежегодно устраивает показательные игры на выживание, за которыми в прямом эфире следит весь мир.
+
+        publishingDate:
+          type: string
+          format: date-time
+          example: 2022-10-21T22:55:33.903Z
+
+        genre:
+          type: string
+          enum: [ comedy, crime, documentary, drama, horror, family, romance, scifi, thriller ]
+          example: comedy
+
+        releaseYear:
+          type: integer
+          minimum: 1895
+          maximum: 2022
+          example: 2013
+
+        previewPath:
+          type: string
+          format: url
+          example: https://www.what-to-watch.ru/hunger_games_preview
+
+        moviePath:
+          type: string
+          format: url
+          example: https://www.what-to-watch.ru/hunger_games
+
+        actors:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          uniqueItems: true
+          example: [ Дженнифер Лоуренс, Джош Хатчерсон, Лиам Хемсворт ]
+
+        director:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Гэри Росс
+
+        durationInMinutes:
+          type: number
+          minimum: 0.1
+
+        userId:
+          type: string
+          format: uuid
+          example: 6329c3d6a04ab1061c6425ea
+
+        posterPath:
+          type: string
+          format: uri
+          pattern: ([^\s]+(\.jpg)$)
+          example: hunger_games_poster.jpg
+
+        backgroundImagePath:
+          type: string
+          format: uri
+          pattern: ([^\s]+(\.jpg)$)
+          example: hunger_games_bg.jpg
+
+        backgroundColor:
+          type: string
+          example: green
+
+      required:
+        - title
+        - description
+        - publishingDate
+        - genre
+        - releaseYear
+        - previewPath
+        - moviePath
+        - actors
+        - director
+        - durationInMinutes
+        - userId
+        - posterPath
+        - backgroundImagePath
+        - backgroundColor
+
+    movie:
+      type: object
+
+      properties:
+        title:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Голодные игры
+
+        description:
+          type: string
+          minLength: 20
+          maxLength: 1024
+          example: Деспотичное государство ежегодно устраивает показательные игры на выживание, за которыми в прямом эфире следит весь мир.
+
+        publishingDate:
+          type: string
+          format: date-time
+          example: 2022-10-21T22:55:33.903Z
+
+        genre:
+          type: string
+          enum: [ comedy, crime, documentary, drama, horror, family, romance, scifi, thriller ]
+          example: comedy
+
+        releaseYear:
+          type: integer
+          minimum: 1895
+          maximum: 2022
+          example: 2013
+
+        rating:
+          type: integer
+          minimum: 0
+          maximum: 10
+          example: 5
+
+        previewPath:
+          type: string
+          format: url
+          example: https://www.what-to-watch.ru/hunger_games_preview
+
+        moviePath:
+          type: string
+          format: url
+          example: https://www.what-to-watch.ru/hunger_games
+
+        actors:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          uniqueItems: true
+          example: [ Дженнифер Лоуренс, Джош Хатчерсон, Лиам Хемсворт ]
+
+        director:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Гэри Росс
+
+        durationInMinutes:
+          type: number
+          minimum: 0.1
+          example: 60
+
+        commentsCount:
+          type: integer
+          minimum: 0
+          example: 10
+
+        user:
+          $ref: '#/components/schemas/user'
+
+        posterPath:
+          type: string
+          format: uri
+          pattern: ([^\s]+(\.jpg)$)
+          example: hunger_games_poster.jpg
+
+        backgroundImagePath:
+          type: string
+          format: uri
+          pattern: ([^\s]+(\.jpg)$)
+          example: hunger_games_bg.jpg
+
+        backgroundColor:
+          type: string
+          example: green
+
+      required:
+        - title
+        - description
+        - publishingDate
+        - genre
+        - releaseYear
+        - rating
+        - previewPath
+        - moviePath
+        - actors
+        - director
+        - durationInMinutes
+        - commentsCount
+        - user
+        - posterPath
+        - backgroundImagePath
+        - backgroundColor
+
+    updateMovie:
+      allOf:
+        - $ref: '#/components/schemas/createMovie'
+        - type: object
+          properties:
+            movieId:
+              type: string
+              format: uuid
+              example: 6329c3d6a04ab1061c6425ea
+          required:
+            - movieId
+
+
+    movieListItem:
+      type: object
+
+      properties:
+        title:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Голодные игры
+
+        publishingDate:
+          type: string
+          format: date-time
+          example: 2022-10-21T22:55:33.903Z
+
+        genre:
+          type: string
+          enum: [ comedy, crime, documentary, drama, horror, family, romance, scifi, thriller ]
+          example: comedy
+
+        previewPath:
+          type: string
+          format: url
+          example: https://www.what-to-watch.ru/hunger_games_preview
+
+        user:
+          $ref: '#/components/schemas/user'
+
+        posterPath:
+          type: string
+          format: uri
+          pattern: ([^\s]+(\.jpg)$)
+          example: hunger_games_poster.jpg
+
+        commentsCount:
+          type: integer
+          minimum: 0
+          example: 10
+
+      required:
+        - title
+        - publishingDate
+        - genre
+        - previewPath
+        - user
+        - posterPath
+        - commentsCount
+
+
+    comment:
+      type: object
+
+      properties:
+        text:
+          type: string
+          minLength: 5
+          maxLength: 1024
+          example: Супер крутой фильм!
+
+        rating:
+          type: integer
+          minimum: 0
+          maximum: 10
+          example: 10
+
+        publishingDate:
+          type: string
+          format: date-time
+          example: 2022-10-21T22:55:33.903Z
+
+        user:
+          $ref: '#/components/schemas/user'
+
+      required:
+        - text
+        - rating
+        - user

@@ -1,5 +1,5 @@
-import {getGenre} from '../types/genre.type.js';
 import crypto from 'crypto';
+import {getGenre} from '../types/genre.type.js';
 
 export const createMovie = (row: string) => {
   const tokens = row.replace('\n', '').split('\t');
@@ -40,6 +40,12 @@ export const createMovie = (row: string) => {
     backgroundImagePath,
     backgroundColor
   };
+};
+
+export const checkPassword = (password: string) => {
+  if (password.length < 6 || password.length > 12) {
+    throw new Error('Password should be from 6 to 12 characters');
+  }
 };
 
 export const createSHA256 = (line: string, salt: string): string => crypto.createHmac('sha256', salt).update(line).digest('hex');

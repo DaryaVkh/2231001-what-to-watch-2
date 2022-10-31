@@ -2,6 +2,7 @@ import {TGenre} from './genre.type.js';
 import {User} from './user.type.js';
 
 export type Movie = {
+  isPromo?: boolean;
   title: string;
   description: string;
   publishingDate: Date;

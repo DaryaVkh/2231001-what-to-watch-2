@@ -15,6 +15,9 @@ import {types} from '@typegoose/typegoose';
 import {MovieEntity, MovieModel} from './modules/movie/movie.entity.js';
 import {MovieServiceInterface} from './modules/movie/movie-service.interface.js';
 import MovieService from './modules/movie/movie.service.js';
+import CommentService from './modules/comment/comment.service.js';
+import {CommentServiceInterface} from './modules/comment/comment-service.interface.js';
+import {CommentEntity, CommentModel} from './modules/comment/comment.entity.js';
 
 const applicationContainer = new Container();
 applicationContainer.bind<Application>(COMPONENT.Application).to(Application).inSingletonScope();
@@ -25,6 +28,8 @@ applicationContainer.bind<UserServiceInterface>(COMPONENT.UserServiceInterface).
 applicationContainer.bind<types.ModelType<UserEntity>>(COMPONENT.UserModel).toConstantValue(UserModel);
 applicationContainer.bind<MovieServiceInterface>(COMPONENT.MovieServiceInterface).to(MovieService);
 applicationContainer.bind<types.ModelType<MovieEntity>>(COMPONENT.MovieModel).toConstantValue(MovieModel);
+applicationContainer.bind<CommentServiceInterface>(COMPONENT.CommentServiceInterface).to(CommentService);
+applicationContainer.bind<types.ModelType<CommentEntity>>(COMPONENT.CommentModel).toConstantValue(CommentModel);
 
 const application = applicationContainer.get<Application>(COMPONENT.Application);
 await application.init();

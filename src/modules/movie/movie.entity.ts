@@ -50,7 +50,7 @@ export class MovieEntity extends defaultClasses.TimeStamps {
   public durationInMinutes!: number;
 
   @prop({default: 0})
-  public commentCount!: number;
+  public commentsCount!: number;
 
   @prop({
     ref: UserEntity,
@@ -66,6 +66,9 @@ export class MovieEntity extends defaultClasses.TimeStamps {
 
   @prop({required: true})
   public backgroundColor!: string;
+
+  @prop()
+  public isPromo?: boolean;
 }
 
 export const MovieModel = getModelForClass(MovieEntity);

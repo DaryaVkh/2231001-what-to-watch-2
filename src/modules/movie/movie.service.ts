@@ -66,7 +66,7 @@ export default class MovieService implements MovieServiceInterface {
   }
 
   async incCommentsCount(movieId: string): Promise<void | null> {
-    return this.movieModel.findByIdAndUpdate(movieId, {'$inc': {commentsCount: 1}});
+    return this.movieModel.findByIdAndUpdate(movieId, {$inc: {commentsCount: 1}});
   }
 
   async updateMovieRating(movieId: string, newRating: number): Promise<void | null> {

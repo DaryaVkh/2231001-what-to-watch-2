@@ -40,7 +40,7 @@ export default class UserService implements UserServiceInterface {
 
   async findToWatch(userId: string): Promise<DocumentType<MovieEntity>[]> {
     const moviesToWatch = await this.userModel.findById(userId).select('moviesToWatch');
-    return this.movieModel.find({id: { $in: moviesToWatch }});
+    return this.movieModel.find({_id: { $in: moviesToWatch }});
   }
 
   async addToWatch(movieId: string, userId: string): Promise<void | null> {

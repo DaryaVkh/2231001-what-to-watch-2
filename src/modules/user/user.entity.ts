@@ -1,7 +1,6 @@
 import {User} from '../../types/user.type.js';
-import typegoose, {defaultClasses, getModelForClass, Ref} from '@typegoose/typegoose';
+import typegoose, {defaultClasses, getModelForClass} from '@typegoose/typegoose';
 import {checkPassword, createSHA256} from '../../utils/common-functions.js';
-import {MovieEntity} from '../movie/movie.entity.js';
 
 const {prop, modelOptions} = typegoose;
 
@@ -30,8 +29,8 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   @prop({required: true, default: ''})
   public name!: string;
 
-  @prop({ref: MovieEntity, required: true, default: []})
-  public moviesToWatch!: Ref<MovieEntity>[];
+  @prop({required: true, default: []})
+  public moviesToWatch!: string[];
 
   @prop({required: true, default: ''})
   private password!: string;

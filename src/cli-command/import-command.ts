@@ -11,10 +11,10 @@ import ConsoleLoggerService from '../common/logger/console-logger.service.js';
 import MovieService from '../modules/movie/movie.service.js';
 import {MovieModel} from '../modules/movie/movie.entity.js';
 import MongoDBService from '../common/db-client/mongodb.service.js';
-import {Movie} from '../types/movie.type';
+import {Movie} from '../types/movie.type.js';
 import {getDBConnectionURI} from '../utils/db.js';
 import {ConfigInterface} from '../common/config/config.interface.js';
-import ConfigService from '../common/config/config.service';
+import ConfigService from '../common/config/config.service.js';
 
 const DEFAULT_USER_PASSWORD = '123456';
 

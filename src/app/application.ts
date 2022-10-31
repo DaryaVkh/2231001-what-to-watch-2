@@ -14,7 +14,8 @@ export default class Application {
   async init() {
     this.logger.info(`Application initialized. Get value from $PORT: ${this.config.get('PORT')}.`);
 
-    const uri = getDBConnectionURI(this.config.get('DB_USER'),
+    const uri = getDBConnectionURI(
+      this.config.get('DB_USER'),
       this.config.get('DB_PASSWORD'),
       this.config.get('DB_HOST'),
       this.config.get('DB_PORT'),

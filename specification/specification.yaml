@@ -193,7 +193,7 @@ paths:
           description: Movie id to update.
 
       requestBody:
-        description: Полный набор информации и идентификатор редактируемого фильма.
+        description: Полный набор информации по фильму.
         content:
           application/json:
             schema:
@@ -722,14 +722,6 @@ components:
     updateMovie:
       allOf:
         - $ref: '#/components/schemas/createMovie'
-        - type: object
-          properties:
-            movieId:
-              type: string
-              format: uuid
-              example: 6329c3d6a04ab1061c6425ea
-          required:
-            - movieId
 
 
     movieListItem:

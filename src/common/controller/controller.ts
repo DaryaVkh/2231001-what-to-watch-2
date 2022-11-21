@@ -1,9 +1,9 @@
-import {injectable} from 'inversify';
 import {Response, Router} from 'express';
-import {StatusCodes} from 'http-status-codes';
 import asyncHandler from 'express-async-handler';
-import {LoggerInterface} from '../logger/logger.interface.js';
+import {StatusCodes} from 'http-status-codes';
+import {injectable} from 'inversify';
 import {RouteInterface} from '../../types/route.type.js';
+import {LoggerInterface} from '../logger/logger.interface.js';
 import {ControllerInterface} from './controller.interface.js';
 
 @injectable()
@@ -18,7 +18,7 @@ export abstract class Controller implements ControllerInterface {
     return this._router;
   }
 
-  addRoute(route: RouteInterface) {
+  addRoute<T extends string>(route: RouteInterface<T>) {
     this._router[route.method](route.path, asyncHandler(route.handler.bind(this)));
     this.logger.info(`Route registered: ${route.method.toUpperCase()} ${route.path}`);
   }

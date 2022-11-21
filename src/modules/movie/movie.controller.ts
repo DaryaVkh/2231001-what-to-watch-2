@@ -1,16 +1,17 @@
 import {Request, Response} from 'express';
+import {StatusCodes} from 'http-status-codes';
 import {inject, injectable} from 'inversify';
 import {Controller} from '../../common/controller/controller.js';
-import {LoggerInterface} from '../../common/logger/logger.interface.js';
-import {HttpMethod} from '../../types/http-method.enum.js';
-import {COMPONENT} from '../../types/component.type.js';
-import {MovieServiceInterface} from './movie-service.interface.js';
-import CreateMovieDto from './dto/create-movie.dto.js';
-import {fillDTO} from '../../utils/common-functions.js';
-import MovieResponse from './response/movie.response.js';
-import UpdateMovieDto from './dto/update-movie.dto';
 import HttpError from '../../common/errors/http-error.js';
-import {StatusCodes} from 'http-status-codes';
+import {LoggerInterface} from '../../common/logger/logger.interface.js';
+import {COMPONENT} from '../../types/component.type.js';
+import {HttpMethod} from '../../types/http-method.enum.js';
+import {fillDTO} from '../../utils/common-functions.js';
+import CreateMovieDto from './dto/create-movie.dto.js';
+import UpdateMovieDto from './dto/update-movie.dto.js';
+import {MovieServiceInterface} from './movie-service.interface.js';
+import {MovieRoute} from './movie.models.js';
+import MovieResponse from './response/movie.response.js';
 
 @injectable()
 export default class MovieController extends Controller {
@@ -20,12 +21,12 @@ export default class MovieController extends Controller {
 
     this.logger.info('Register routes for MovieController.');
 
-    this.addRoute({path: '/', method: HttpMethod.Get, handler: this.index});
-    this.addRoute({path: '/create', method: HttpMethod.Post, handler: this.create});
-    this.addRoute({path: '/:movieId', method: HttpMethod.Get, handler: this.getFilm});
-    this.addRoute({path: '/:movieId', method: HttpMethod.Patch, handler: this.updateFilm});
-    this.addRoute({path: '/:movieId', method: HttpMethod.Delete, handler: this.deleteFilm});
-    this.addRoute({path: '/promo', method: HttpMethod.Get, handler: this.getPromo});
+    this.addRoute<MovieRoute>({path: MovieRoute.ROOT, method: HttpMethod.Get, handler: this.index});
+    this.addRoute<MovieRoute>({path: MovieRoute.CREATE, method: HttpMethod.Post, handler: this.create});
+    this.addRoute<MovieRoute>({path: MovieRoute.MOVIE, method: HttpMethod.Get, handler: this.getFilm});
+    this.addRoute<MovieRoute>({path: MovieRoute.MOVIE, method: HttpMethod.Patch, handler: this.updateFilm});
+    this.addRoute<MovieRoute>({path: MovieRoute.MOVIE, method: HttpMethod.Delete, handler: this.deleteFilm});
+    this.addRoute<MovieRoute>({path: MovieRoute.PROMO, method: HttpMethod.Get, handler: this.getPromo});
   }
 
   async index(_req: Request, res: Response): Promise<void> {

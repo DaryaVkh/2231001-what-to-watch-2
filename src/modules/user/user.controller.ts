@@ -1,18 +1,19 @@
-import {Controller} from '../../common/controller/controller.js';
-import {inject, injectable} from 'inversify';
-import {LoggerInterface} from '../../common/logger/logger.interface.js';
-import {HttpMethod} from '../../types/http-method.enum.js';
 import {Request, Response} from 'express';
-import CreateUserDto from './dto/create-user.dto.js';
-import {UserServiceInterface} from './user-service.interface.js';
-import HttpError from '../../common/errors/http-error.js';
 import {StatusCodes} from 'http-status-codes';
-import UserResponse from './response/user.response.js';
+import {inject, injectable} from 'inversify';
 import {ConfigInterface} from '../../common/config/config.interface.js';
-import LoginUserDto from './dto/login-user.dto.js';
+import {Controller} from '../../common/controller/controller.js';
+import HttpError from '../../common/errors/http-error.js';
+import {LoggerInterface} from '../../common/logger/logger.interface.js';
 import {COMPONENT} from '../../types/component.type.js';
+import {HttpMethod} from '../../types/http-method.enum.js';
 import {fillDTO} from '../../utils/common-functions.js';
 import MovieResponse from '../movie/response/movie.response.js';
+import CreateUserDto from './dto/create-user.dto.js';
+import LoginUserDto from './dto/login-user.dto.js';
+import UserResponse from './response/user.response.js';
+import {UserServiceInterface} from './user-service.interface.js';
+import {UserRoute} from './user.models.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -22,13 +23,13 @@ export default class UserController extends Controller {
     super(logger);
     this.logger.info('Register routes for UserController.');
 
-    this.addRoute({path: '/register', method: HttpMethod.Post, handler: this.create});
-    this.addRoute({path: '/login', method: HttpMethod.Post, handler: this.login});
-    this.addRoute({path: '/login', method: HttpMethod.Get, handler: this.get});
-    this.addRoute({path: '/logout', method: HttpMethod.Delete, handler: this.logout});
-    this.addRoute({path: '/to_watch', method: HttpMethod.Get, handler: this.getToWatch});
-    this.addRoute({path: '/to_watch', method: HttpMethod.Post, handler: this.postToWatch});
-    this.addRoute({path: '/to_watch', method: HttpMethod.Delete, handler: this.deleteToWatch});
+    this.addRoute<UserRoute>({path: UserRoute.REGISTER, method: HttpMethod.Post, handler: this.create});
+    this.addRoute<UserRoute>({path: UserRoute.LOGIN, method: HttpMethod.Post, handler: this.login});
+    this.addRoute<UserRoute>({path: UserRoute.LOGIN, method: HttpMethod.Get, handler: this.get});
+    this.addRoute<UserRoute>({path: UserRoute.LOGOUT, method: HttpMethod.Delete, handler: this.logout});
+    this.addRoute<UserRoute>({path: UserRoute.TO_WATCH, method: HttpMethod.Get, handler: this.getToWatch});
+    this.addRoute<UserRoute>({path: UserRoute.TO_WATCH, method: HttpMethod.Post, handler: this.postToWatch});
+    this.addRoute<UserRoute>({path: UserRoute.TO_WATCH, method: HttpMethod.Delete, handler: this.deleteToWatch});
   }
 
   async create({body}: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>, res: Response): Promise<void> {

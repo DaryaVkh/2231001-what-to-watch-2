@@ -1,12 +1,12 @@
-import {LoggerInterface} from '../common/logger/logger.interface.js';
-import {ConfigInterface} from '../common/config/config.interface.js';
+import express, {Express} from 'express';
 import {inject, injectable} from 'inversify';
+import {ConfigInterface} from '../common/config/config.interface.js';
+import {ControllerInterface} from '../common/controller/controller.interface';
+import {DatabaseInterface} from '../common/db-client/db.interface.js';
+import {ExceptionFilterInterface} from '../common/errors/exception-filter.interface';
+import {LoggerInterface} from '../common/logger/logger.interface.js';
 import {COMPONENT} from '../types/component.type.js';
 import {getDBConnectionURI} from '../utils/db.js';
-import {DatabaseInterface} from '../common/db-client/db.interface.js';
-import express, {Express} from 'express';
-import {ControllerInterface} from '../common/controller/controller.interface';
-import {ExceptionFilterInterface} from '../common/errors/exception-filter.interface';
 
 @injectable()
 export default class Application {
@@ -50,7 +50,7 @@ export default class Application {
     this.initMiddleware();
     this.initRoutes();
     this.initExceptionFilters();
-    this.expressApp.listen(this.config.get('PORT'));
-    this.logger.info(`Server started on http://localhost:${this.config.get('PORT')}`);
+    const port = this.config.get('PORT');
+    this.expressApp.listen(port, () => this.logger.info(`Server started on http://localhost:${port}`));
   }
 }

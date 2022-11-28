@@ -12,6 +12,5 @@ export default class CreateUserDto {
   public password!: string;
 
   @Matches(/[^\\s]+(.*?)\\.(jpg|png)$/, {message: 'avatarPath must be .jpg or .png format image'})
-  @IsString({message: 'avatarPath is required'})
-  public avatarPath!: string;
+  public avatarPath?: string;
 }

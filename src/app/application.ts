@@ -17,17 +17,20 @@ export default class Application {
               @inject(COMPONENT.DatabaseInterface) private dbClient: DatabaseInterface,
               @inject(COMPONENT.MovieController) private movieController: ControllerInterface,
               @inject(COMPONENT.ExceptionFilterInterface) private exceptionFilter: ExceptionFilterInterface,
-              @inject(COMPONENT.UserController) private userController: ControllerInterface,) {
+              @inject(COMPONENT.UserController) private userController: ControllerInterface,
+              @inject(COMPONENT.CommentController) private commentController: ControllerInterface,) {
     this.expressApp = express();
   }
 
   initRoutes() {
     this.expressApp.use('/movies', this.movieController.router);
     this.expressApp.use('/users', this.userController.router);
+    this.expressApp.use('/comments', this.commentController.router);
   }
 
   initMiddleware() {
     this.expressApp.use(express.json());
+    this.expressApp.use('/upload', express.static(this.config.get('UPLOAD_DIRECTORY')));
   }
 
   initExceptionFilters() {

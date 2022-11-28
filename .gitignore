@@ -11,4 +11,5 @@ coverage
 *.log
 *.env
 
-/mongodb/*
+/mongodb/
+/upload/

@@ -5,6 +5,9 @@ import {ConfigInterface} from '../../common/config/config.interface.js';
 import {Controller} from '../../common/controller/controller.js';
 import HttpError from '../../common/errors/http-error.js';
 import {LoggerInterface} from '../../common/logger/logger.interface.js';
+import {UploadFileMiddleware} from '../../middlewares/upload-file.middleware.js';
+import {ValidateDtoMiddleware} from '../../middlewares/validate-dto.middleware.js';
+import {ValidateObjectIdMiddleware} from '../../middlewares/validate-objectid.middleware.js';
 import {COMPONENT} from '../../types/component.type.js';
 import {HttpMethod} from '../../types/http-method.enum.js';
 import {fillDTO} from '../../utils/common-functions.js';
@@ -23,13 +26,32 @@ export default class UserController extends Controller {
     super(logger);
     this.logger.info('Register routes for UserController.');
 
-    this.addRoute<UserRoute>({path: UserRoute.REGISTER, method: HttpMethod.Post, handler: this.create});
-    this.addRoute<UserRoute>({path: UserRoute.LOGIN, method: HttpMethod.Post, handler: this.login});
+    this.addRoute<UserRoute>({
+      path: UserRoute.REGISTER,
+      method: HttpMethod.Post,
+      handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateUserDto)]
+    });
+    this.addRoute<UserRoute>({
+      path: UserRoute.LOGIN,
+      method: HttpMethod.Post,
+      handler: this.login,
+      middlewares: [new ValidateDtoMiddleware(LoginUserDto)]
+    });
     this.addRoute<UserRoute>({path: UserRoute.LOGIN, method: HttpMethod.Get, handler: this.get});
     this.addRoute<UserRoute>({path: UserRoute.LOGOUT, method: HttpMethod.Delete, handler: this.logout});
     this.addRoute<UserRoute>({path: UserRoute.TO_WATCH, method: HttpMethod.Get, handler: this.getToWatch});
     this.addRoute<UserRoute>({path: UserRoute.TO_WATCH, method: HttpMethod.Post, handler: this.postToWatch});
     this.addRoute<UserRoute>({path: UserRoute.TO_WATCH, method: HttpMethod.Delete, handler: this.deleteToWatch});
+    this.addRoute<UserRoute>({
+      path: UserRoute.AVATAR,
+      method: HttpMethod.Post,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new ValidateObjectIdMiddleware('userId'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+      ]
+    });
   }
 
   async create({body}: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>, res: Response): Promise<void> {
@@ -74,5 +96,11 @@ export default class UserController extends Controller {
   async deleteToWatch({body}: Request<Record<string, unknown>, Record<string, unknown>, {userId: string, movieId: string}>, _res: Response): Promise<void> {
     await this.userService.deleteToWatch(body.userId, body.movieId);
     this.noContent(_res, {message: 'Успешно. Фильм удален из списка "К просмотру".'});
+  }
+
+  async uploadAvatar(req: Request, res: Response) {
+    this.created(res, {
+      filepath: req.file?.path
+    });
   }
 }

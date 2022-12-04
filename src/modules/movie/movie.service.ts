@@ -24,14 +24,13 @@ export default class MovieService implements MovieServiceInterface {
     return this.movieModel.findById(movieId).populate('userId');
   }
 
-  async find(): Promise<DocumentType<MovieEntity>[]> {
+  async find(limit?: number): Promise<DocumentType<MovieEntity>[]> {
     return this.movieModel.aggregate([
       {
         $lookup: {
           from: 'comments',
           let: {movieId: '$_id'},
           pipeline: [
-            {$match: {$expr: {$in: ['$$movieId', '$movies']}}},
             {$project: {_id: 1}}
           ],
           as: 'comments'
@@ -45,7 +44,7 @@ export default class MovieService implements MovieServiceInterface {
         }
       },
       {$unset: 'comments'},
-      {$limit: MAX_MOVIES_COUNT}
+      {$limit: limit || MAX_MOVIES_COUNT}
     ]);
   }
 

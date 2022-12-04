@@ -303,10 +303,10 @@ paths:
                 $ref: '#/components/schemas/movie'
 
 
-  /movies/to_watch:
+  /users/to_watch:
     get:
       tags:
-        - movies
+        - users
       summary: Получить список фильмов «К просмотру»
       description: Возвращает список фильмов, добавленных к просмотру
 
@@ -341,7 +341,7 @@ paths:
 
     post:
       tags:
-        - movies
+        - users
       summary: Добавить фильм в список "К просмотру"
       description: Добавляет фильм в список "К просмотру"
 
@@ -377,7 +377,7 @@ paths:
 
     delete:
       tags:
-        - movies
+        - users
       summary: Удалить фильм из списка "К просмотру"
       description: Удаляет фильм из списка "К просмотру"
 

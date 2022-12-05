@@ -27,23 +27,10 @@ export default class MovieService implements MovieServiceInterface {
   async find(limit?: number): Promise<DocumentType<MovieEntity>[]> {
     return this.movieModel.aggregate([
       {
-        $lookup: {
-          from: 'comments',
-          let: {movieId: '$_id'},
-          pipeline: [
-            {$project: {_id: 1}}
-          ],
-          as: 'comments'
-        },
-      },
-      {
         $addFields: {
-          id: {$toString: '$_id'},
-          commentsCount: {$size: '$comments'},
-          rating: {$avg: '$comments.rating'}
+          id: {$toString: '$_id'}
         }
       },
-      {$unset: 'comments'},
       {$limit: limit || MAX_MOVIES_COUNT}
     ]);
   }

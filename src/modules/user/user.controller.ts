@@ -84,17 +84,17 @@ export default class UserController extends Controller {
   }
 
   async getToWatch({body}: Request<Record<string, unknown>, Record<string, unknown>, {userId: string}>, _res: Response): Promise<void> {
-    const result = this.userService.findToWatch(body.userId);
+    const result = await this.userService.findToWatch(body.userId);
     this.ok(_res, fillDTO(MovieResponse, result));
   }
 
   async postToWatch({body}: Request<Record<string, unknown>, Record<string, unknown>, {userId: string, movieId: string}>, _res: Response): Promise<void> {
-    await this.userService.addToWatch(body.userId, body.movieId);
+    await this.userService.addToWatch(body.movieId, body.userId);
     this.noContent(_res, {message: 'Успешно. Фильм добавлен в список "К просмотру".'});
   }
 
   async deleteToWatch({body}: Request<Record<string, unknown>, Record<string, unknown>, {userId: string, movieId: string}>, _res: Response): Promise<void> {
-    await this.userService.deleteToWatch(body.userId, body.movieId);
+    await this.userService.deleteToWatch(body.movieId, body.userId);
     this.noContent(_res, {message: 'Успешно. Фильм удален из списка "К просмотру".'});
   }
 

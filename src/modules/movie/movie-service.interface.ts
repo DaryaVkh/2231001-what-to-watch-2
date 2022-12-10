@@ -7,7 +7,7 @@ import {MovieEntity} from './movie.entity.js';
 export interface MovieServiceInterface extends DocumentExistsInterface {
   create(dto: CreateMovieDto): Promise<DocumentType<MovieEntity>>;
   findById(movieId: string): Promise<DocumentType<MovieEntity> | null>;
-  find(): Promise<DocumentType<MovieEntity>[]>;
+  find(limit?: number): Promise<DocumentType<MovieEntity>[]>;
   updateById(movieId: string, dto: UpdateMovieDto): Promise<DocumentType<MovieEntity> | null>;
   deleteById(movieId: string): Promise<void | null>;
   findByGenre(genre: string, limit?: number): Promise<DocumentType<MovieEntity>[]>;

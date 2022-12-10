@@ -1,3 +1,4 @@
+import {DocumentType} from '@typegoose/typegoose/lib/types.js';
 import {Request, Response} from 'express';
 import * as core from 'express-serve-static-core';
 import {inject, injectable} from 'inversify';
@@ -7,6 +8,7 @@ import {DocumentExistsMiddleware} from '../../middlewares/document-exists.middle
 import {ValidateDtoMiddleware} from '../../middlewares/validate-dto.middleware.js';
 import {ValidateObjectIdMiddleware} from '../../middlewares/validate-objectid.middleware.js';
 import {COMPONENT} from '../../types/component.type.js';
+import {TGenre} from '../../types/genre.type.js';
 import {HttpMethod} from '../../types/http-method.enum.js';
 import {fillDTO} from '../../utils/common-functions.js';
 import {CommentServiceInterface} from '../comment/comment-service.interface.js';
@@ -14,12 +16,19 @@ import CommentResponse from '../comment/response/comment.response.js';
 import CreateMovieDto from './dto/create-movie.dto.js';
 import UpdateMovieDto from './dto/update-movie.dto.js';
 import {MovieServiceInterface} from './movie-service.interface.js';
+import {MovieEntity} from './movie.entity.js';
 import {MovieRoute} from './movie.models.js';
+import MovieListItemResponse from './response/movie-list-item.response.js';
 import MovieResponse from './response/movie.response.js';
 
 type ParamsGetMovie = {
   movieId: string;
-}
+};
+
+type QueryParamsGetMovies = {
+  limit?: number;
+  genre?: TGenre;
+};
 
 @injectable()
 export default class MovieController extends Controller {
@@ -30,6 +39,7 @@ export default class MovieController extends Controller {
 
     this.logger.info('Register routes for MovieController.');
 
+    this.addRoute<MovieRoute>({path: MovieRoute.PROMO, method: HttpMethod.Get, handler: this.showPromo});
     this.addRoute<MovieRoute>({path: MovieRoute.ROOT, method: HttpMethod.Get, handler: this.index});
     this.addRoute<MovieRoute>({
       path: MovieRoute.CREATE,
@@ -65,7 +75,6 @@ export default class MovieController extends Controller {
         new DocumentExistsMiddleware(this.movieService, 'Movie', 'movieId')
       ]
     });
-    this.addRoute<MovieRoute>({path: MovieRoute.PROMO, method: HttpMethod.Get, handler: this.showPromo});
     this.addRoute<MovieRoute>({
       path: MovieRoute.COMMENTS,
       method: HttpMethod.Get,
@@ -77,9 +86,15 @@ export default class MovieController extends Controller {
     });
   }
 
-  async index(_req: Request, res: Response): Promise<void> {
-    const movies = await this.movieService.find();
-    const movieResponse = fillDTO(MovieResponse, movies);
+  async index(req: Request<unknown, unknown, unknown, QueryParamsGetMovies>, res: Response): Promise<void> {
+    const { genre, limit } = req.query;
+    let movies: DocumentType<MovieEntity>[];
+    if (genre) {
+      movies = await this.movieService.findByGenre(genre, limit);
+    } else {
+      movies = await this.movieService.find(limit);
+    }
+    const movieResponse = fillDTO(MovieListItemResponse, movies);
     this.ok(res, movieResponse);
   }
 

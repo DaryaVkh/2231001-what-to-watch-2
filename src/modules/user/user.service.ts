@@ -1,12 +1,12 @@
-import {inject, injectable} from 'inversify';
 import {types} from '@typegoose/typegoose';
 import {DocumentType} from '@typegoose/typegoose/lib/types.js';
-import {UserEntity} from './user.entity.js';
+import {inject, injectable} from 'inversify';
+import {LoggerInterface} from '../../common/logger/logger.interface.js';
+import {COMPONENT} from '../../types/component.type.js';
+import {MovieEntity} from '../movie/movie.entity.js';
 import CreateUserDto from './dto/create-user.dto.js';
 import {UserServiceInterface} from './user-service.interface.js';
-import {COMPONENT} from '../../types/component.type.js';
-import {LoggerInterface} from '../../common/logger/logger.interface.js';
-import {MovieEntity} from '../movie/movie.entity.js';
+import {UserEntity} from './user.entity.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
@@ -40,12 +40,12 @@ export default class UserService implements UserServiceInterface {
 
   async findToWatch(userId: string): Promise<DocumentType<MovieEntity>[]> {
     const moviesToWatch = await this.userModel.findById(userId).select('moviesToWatch');
-    return this.movieModel.find({_id: { $in: moviesToWatch }});
+    return this.movieModel.find({_id: { $in: moviesToWatch?.moviesToWatch }});
   }
 
   async addToWatch(movieId: string, userId: string): Promise<void | null> {
     return this.userModel.findByIdAndUpdate(userId, {
-      $push: {moviesToWatch: movieId}
+      $addToSet: {moviesToWatch: movieId}
     });
   }
 

@@ -18,6 +18,15 @@ export class AuthenticateMiddleware implements MiddlewareInterface {
 
     try {
       const {payload} = await jose.jwtVerify(token, createSecretKey(this.jwtSecret, 'utf-8'));
+
+      if (!payload.email || !payload.id) {
+        return next(new HttpError(
+          StatusCodes.BAD_REQUEST,
+          'Email and id is required',
+          'AuthenticateMiddleware')
+        );
+      }
+
       req.user = {email: `${payload.email}`, id: `${payload.id}`};
       return next();
     } catch {

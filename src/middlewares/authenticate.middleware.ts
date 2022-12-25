@@ -1,4 +1,3 @@
-import {createSecretKey} from 'crypto';
 import {NextFunction, Request, Response} from 'express';
 import {StatusCodes} from 'http-status-codes';
 import * as jose from 'jose';
@@ -17,7 +16,7 @@ export class AuthenticateMiddleware implements MiddlewareInterface {
     const [, token] = authorizationHeader;
 
     try {
-      const {payload} = await jose.jwtVerify(token, createSecretKey(this.jwtSecret, 'utf-8'));
+      const {payload} = await jose.jwtVerify(token, new TextEncoder().encode(this.jwtSecret));
 
       if (!payload.email || !payload.id) {
         return next(new HttpError(

@@ -35,16 +35,16 @@ export class MovieEntity extends defaultClasses.TimeStamps {
   @prop({required: true, default: 0})
   public rating!: number;
 
-  @prop({required: true})
+  @prop({required: true, trim: true})
   public previewPath!: string;
 
-  @prop({required: true})
+  @prop({required: true, trim: true})
   public moviePath!: string;
 
   @prop({required: true})
   public actors!: string[];
 
-  @prop({required: true, minlength: 2, maxlength: 50})
+  @prop({required: true, minlength: 2, maxlength: 50, trim: true})
   public director!: string;
 
   @prop({required: true})
@@ -60,13 +60,13 @@ export class MovieEntity extends defaultClasses.TimeStamps {
   })
   public user!: Ref<UserEntity>;
 
-  @prop({required: true, match: /(\S+(\.jpg)$)/})
+  @prop({required: true, match: /(\S+(\.jpg)$)/, trim: true})
   public posterPath!: string;
 
-  @prop({required: true, match: /(\S+(\.jpg)$)/})
+  @prop({required: true, match: /(\S+(\.jpg)$)/, trim: true})
   public backgroundImagePath!: string;
 
-  @prop({required: true})
+  @prop({required: true, trim: true})
   public backgroundColor!: string;
 
   @prop()

@@ -110,6 +110,8 @@ DB_USER='admin' - админ для базы данных
 DB_PASSWORD='test' - пароль админа для базы данных
 DB_PORT=27017 - порт для базы данных
 DB_NAME='what-to-watch-db' - имя базы данных
-UPLOAD_DIRECTORY='./upload-directory' - директория для сохранения изображений
+UPLOAD_DIRECTORY='/upload-directory' - директория для сохранения изображений
 JWT_SECRET='secret' - секрет для генерации jwt токенов
+STATIC_DIRECTORY_PATH='/static' - директория со статическими ресурсами
+HOST='localhost' - хост, на котором запущен сервер
 ```

@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express, {Express} from 'express';
 import {inject, injectable} from 'inversify';
 import {ConfigInterface} from '../common/config/config.interface.js';
@@ -7,6 +8,7 @@ import {ExceptionFilterInterface} from '../common/errors/exception-filter.interf
 import {LoggerInterface} from '../common/logger/logger.interface.js';
 import {AuthenticateMiddleware} from '../middlewares/authenticate.middleware.js';
 import {COMPONENT} from '../types/component.type.js';
+import {getFullServerPath} from '../utils/common-functions.js';
 import {getDBConnectionURI} from '../utils/db.js';
 
 @injectable()
@@ -32,9 +34,11 @@ export default class Application {
   initMiddleware() {
     this.expressApp.use(express.json());
     this.expressApp.use('/upload', express.static(this.config.get('UPLOAD_DIRECTORY')));
+    this.expressApp.use('/static', express.static(this.config.get('STATIC_DIRECTORY_PATH')));
 
     const authenticateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));
     this.expressApp.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
+    this.expressApp.use(cors());
   }
 
   initExceptionFilters() {
@@ -42,7 +46,8 @@ export default class Application {
   }
 
   async init() {
-    this.logger.info(`Application initialized. Get value from $PORT: ${this.config.get('PORT')}.`);
+    const port = this.config.get('PORT');
+    this.logger.info(`Application initialized. Get value from $PORT: ${port}.`);
 
     const uri = getDBConnectionURI(
       this.config.get('DB_USER'),
@@ -57,7 +62,7 @@ export default class Application {
     this.initMiddleware();
     this.initRoutes();
     this.initExceptionFilters();
-    const port = this.config.get('PORT');
-    this.expressApp.listen(port, () => this.logger.info(`Server started on http://localhost:${port}`));
+    const host = this.config.get('HOST');
+    this.expressApp.listen(port, () => this.logger.info(`Server started on ${getFullServerPath(host, port)}`));
   }
 }

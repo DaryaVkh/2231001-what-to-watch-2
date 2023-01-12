@@ -1,20 +1,20 @@
-import TSVFileReader from '../common/file-reader/tsv-file-reader.js';
-import {CliCommandInterface} from './cli-command.interface.js';
-import {createMovie} from '../utils/common-functions.js';
-import {UserServiceInterface} from '../modules/user/user-service.interface.js';
-import {DatabaseInterface} from '../common/db-client/db.interface.js';
-import {LoggerInterface} from '../common/logger/logger.interface.js';
-import {MovieServiceInterface} from '../modules/movie/movie-service.interface.js';
-import {UserModel} from '../modules/user/user.entity.js';
-import UserService from '../modules/user/user.service.js';
-import ConsoleLoggerService from '../common/logger/console-logger.service.js';
-import MovieService from '../modules/movie/movie.service.js';
-import {MovieModel} from '../modules/movie/movie.entity.js';
-import MongoDBService from '../common/db-client/mongodb.service.js';
-import {Movie} from '../types/movie.type.js';
-import {getDBConnectionURI} from '../utils/db.js';
 import {ConfigInterface} from '../common/config/config.interface.js';
 import ConfigService from '../common/config/config.service.js';
+import {DatabaseInterface} from '../common/db-client/db.interface.js';
+import MongoDBService from '../common/db-client/mongodb.service.js';
+import TSVFileReader from '../common/file-reader/tsv-file-reader.js';
+import ConsoleLoggerService from '../common/logger/console-logger.service.js';
+import {LoggerInterface} from '../common/logger/logger.interface.js';
+import {MovieServiceInterface} from '../modules/movie/movie-service.interface.js';
+import {MovieModel} from '../modules/movie/movie.entity.js';
+import MovieService from '../modules/movie/movie.service.js';
+import {UserServiceInterface} from '../modules/user/user-service.interface.js';
+import {UserModel} from '../modules/user/user.entity.js';
+import UserService from '../modules/user/user.service.js';
+import {Movie} from '../types/movie.type.js';
+import {createMovie} from '../utils/common-functions.js';
+import {getDBConnectionURI} from '../utils/db.js';
+import {CliCommandInterface} from './cli-command.interface.js';
 
 const DEFAULT_USER_PASSWORD = '123456';
 
@@ -69,10 +69,7 @@ export default class ImportCommand implements CliCommandInterface {
       password: process.env.DB_PASSWORD || DEFAULT_USER_PASSWORD
     }, this.salt);
 
-    await this.movieService.create({
-      ...movie,
-      userId: user.id,
-    });
+    await this.movieService.create(movie, user.id);
   }
 
   private async onLine(line: string, resolve: () => void) {

@@ -1,6 +1,7 @@
-import crypto from 'crypto';
-import {getGenre} from '../types/genre.type.js';
 import {ClassConstructor, plainToInstance} from 'class-transformer';
+import crypto from 'crypto';
+import * as jose from 'jose';
+import {getGenre} from '../types/genre.type.js';
 
 export const createMovie = (row: string) => {
   const tokens = row.replace('\n', '').split('\t');
@@ -18,7 +19,6 @@ export const createMovie = (row: string) => {
     durationInMinutes,
     userName,
     email,
-    avatarPath,
     posterPath,
     backgroundImagePath,
     backgroundColor
@@ -36,7 +36,7 @@ export const createMovie = (row: string) => {
     director,
     durationInMinutes: Number(durationInMinutes),
     commentsCount: 0,
-    user: {email, name: userName, avatarPath},
+    user: {email, name: userName},
     posterPath,
     backgroundImagePath,
     backgroundColor
@@ -52,8 +52,15 @@ export const checkPassword = (password: string) => {
 export const createSHA256 = (line: string, salt: string): string => crypto.createHmac('sha256', salt).update(line).digest('hex');
 
 export const fillDTO = <T, V>(someDto: ClassConstructor<T>, plainObject: V) =>
-  plainToInstance(someDto, plainObject, {excludeExtraneousValues: true});
+  plainToInstance(someDto, plainObject, {excludeExtraneousValues: true, enableImplicitConversion: true});
 
 export const createErrorObject = (message: string) => ({
   error: message,
 });
+
+export const createJWT = async (algorithm: string, jwtSecret: string, payload: object): Promise<string> =>
+  new jose.SignJWT({...payload})
+    .setProtectedHeader({alg: algorithm})
+    .setIssuedAt()
+    .setExpirationTime('2d')
+    .sign(new TextEncoder().encode(jwtSecret));

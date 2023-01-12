@@ -1,5 +1,6 @@
-import {Expose} from 'class-transformer';
-import {TGenre} from '../../../types/genre.type';
+import {Expose, Type} from 'class-transformer';
+import {TGenre} from '../../../types/genre.type.js';
+import UserResponse from '../../user/response/user.response.js';
 
 export default class MovieResponse {
   @Expose()
@@ -36,7 +37,8 @@ export default class MovieResponse {
   public durationInMinutes!: number;
 
   @Expose()
-  public userId!: string;
+  @Type(() => UserResponse)
+  public user!: UserResponse;
 
   @Expose()
   public posterPath!: string;
@@ -46,4 +48,7 @@ export default class MovieResponse {
 
   @Expose()
   public backgroundColor!: string;
+
+  @Expose()
+  public commentsCount!: number;
 }

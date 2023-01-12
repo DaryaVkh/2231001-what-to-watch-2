@@ -1,5 +1,6 @@
-import {Expose} from 'class-transformer';
-import {TGenre} from '../../../types/genre.type';
+import {Expose, Type} from 'class-transformer';
+import {TGenre} from '../../../types/genre.type.js';
+import UserResponse from '../../user/response/user.response.js';
 
 export default class MovieListItemResponse {
   @Expose()
@@ -15,7 +16,8 @@ export default class MovieListItemResponse {
   public previewPath!: string;
 
   @Expose()
-  public userId!: string;
+  @Type(() => UserResponse)
+  public user!: UserResponse;
 
   @Expose()
   public posterPath!: string;

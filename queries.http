@@ -147,7 +147,7 @@ Content-Type: multipart/form-data; boundary=HereGoes
 Content-Disposition: form-data; name="email"
 Content-Type: text/plain
 
-philipp3@mail.ru
+philipp@mail.ru
 --HereGoes
 Content-Disposition: form-data; name="name"
 Content-Type: text/plain
@@ -175,7 +175,7 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0g
 Content-Disposition: form-data; name="avatar"; filename="avatar.png"
 Content-Type: image/png
 
-< /Users/demelissiana/Downloads/meoweb.png
+< /Users/demelissiana/Downloads/default-avatar.png
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ###

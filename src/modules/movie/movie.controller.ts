@@ -39,18 +39,18 @@ type QueryParamsGetMovies = {
 @injectable()
 export default class MovieController extends Controller {
   constructor(@inject(COMPONENT.LoggerInterface) logger: LoggerInterface,
-              @inject(COMPONENT.ConfigInterface) configService: ConfigInterface,
-              @inject(COMPONENT.UserServiceInterface) private readonly userService: UserServiceInterface,
-              @inject(COMPONENT.MovieServiceInterface) private readonly movieService: MovieServiceInterface,
-              @inject(COMPONENT.CommentServiceInterface) private readonly commentService: CommentServiceInterface) {
+    @inject(COMPONENT.ConfigInterface) configService: ConfigInterface,
+    @inject(COMPONENT.UserServiceInterface) private readonly userService: UserServiceInterface,
+    @inject(COMPONENT.MovieServiceInterface) private readonly movieService: MovieServiceInterface,
+    @inject(COMPONENT.CommentServiceInterface) private readonly commentService: CommentServiceInterface) {
     super(logger, configService);
 
     this.logger.info('Register routes for MovieController.');
 
-    this.addRoute<MovieRoute>({path: MovieRoute.PROMO, method: HttpMethod.Get, handler: this.showPromo});
-    this.addRoute<MovieRoute>({path: MovieRoute.ROOT, method: HttpMethod.Get, handler: this.index});
+    this.addRoute<MovieRoute>({path: MovieRoute.Promo, method: HttpMethod.Get, handler: this.showPromo});
+    this.addRoute<MovieRoute>({path: MovieRoute.Root, method: HttpMethod.Get, handler: this.index});
     this.addRoute<MovieRoute>({
-      path: MovieRoute.CREATE,
+      path: MovieRoute.Create,
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
@@ -59,7 +59,7 @@ export default class MovieController extends Controller {
       ]
     });
     this.addRoute<MovieRoute>({
-      path: MovieRoute.MOVIE,
+      path: MovieRoute.Movie,
       method: HttpMethod.Get,
       handler: this.show,
       middlewares: [
@@ -68,7 +68,7 @@ export default class MovieController extends Controller {
       ]
     });
     this.addRoute<MovieRoute>({
-      path: MovieRoute.MOVIE,
+      path: MovieRoute.Movie,
       method: HttpMethod.Patch,
       handler: this.update,
       middlewares: [
@@ -79,7 +79,7 @@ export default class MovieController extends Controller {
       ]
     });
     this.addRoute<MovieRoute>({
-      path: MovieRoute.MOVIE,
+      path: MovieRoute.Movie,
       method: HttpMethod.Delete,
       handler: this.delete,
       middlewares: [
@@ -89,7 +89,7 @@ export default class MovieController extends Controller {
       ]
     });
     this.addRoute<MovieRoute>({
-      path: MovieRoute.COMMENTS,
+      path: MovieRoute.Comments,
       method: HttpMethod.Get,
       handler: this.getComments,
       middlewares: [
@@ -108,8 +108,7 @@ export default class MovieController extends Controller {
     } else {
       movies = await this.movieService.find(limit);
     }
-    const movieResponse = fillDTO(MovieListItemResponse, movies);
-    this.ok(res, movieResponse);
+    this.ok(res, fillDTO(MovieListItemResponse, movies));
   }
 
   async create(req: Request<Record<string, unknown>, Record<string, unknown>, CreateMovieDto>, res: Response): Promise<void> {
@@ -121,8 +120,7 @@ export default class MovieController extends Controller {
       posterPath: randomPosterImage,
       backgroundImagePath: randomBackgroundImagePath
     }, user.id);
-    const movie = await this.movieService.findById(result.id);
-    this.created(res, fillDTO(MovieResponse, movie));
+    this.created(res, fillDTO(MovieResponse, result));
   }
 
   async show({params}: Request<core.ParamsDictionary | ParamsGetMovie>, res: Response): Promise<void> {

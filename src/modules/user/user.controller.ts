@@ -29,7 +29,7 @@ export default class UserController extends Controller {
     this.logger.info('Register routes for UserController.');
 
     this.addRoute<UserRoute>({
-      path: UserRoute.REGISTER,
+      path: UserRoute.Register,
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
@@ -38,32 +38,32 @@ export default class UserController extends Controller {
       ]
     });
     this.addRoute<UserRoute>({
-      path: UserRoute.LOGIN,
+      path: UserRoute.Login,
       method: HttpMethod.Post,
       handler: this.login,
       middlewares: [new ValidateDtoMiddleware(LoginUserDto)]
     });
-    this.addRoute<UserRoute>({path: UserRoute.LOGIN, method: HttpMethod.Get, handler: this.get});
+    this.addRoute<UserRoute>({path: UserRoute.Login, method: HttpMethod.Get, handler: this.get});
     this.addRoute<UserRoute>({
-      path: UserRoute.TO_WATCH,
+      path: UserRoute.ToWatch,
       method: HttpMethod.Get,
       handler: this.getToWatch,
       middlewares: [new PrivateRouteMiddleware(this.userService)]
     });
     this.addRoute<UserRoute>({
-      path: UserRoute.TO_WATCH,
+      path: UserRoute.ToWatch,
       method: HttpMethod.Post,
       handler: this.postToWatch,
       middlewares: [new PrivateRouteMiddleware(this.userService)]
     });
     this.addRoute<UserRoute>({
-      path: UserRoute.TO_WATCH,
+      path: UserRoute.ToWatch,
       method: HttpMethod.Delete,
       handler: this.deleteToWatch,
       middlewares: [new PrivateRouteMiddleware(this.userService)]
     });
     this.addRoute<UserRoute>({
-      path: UserRoute.AVATAR,
+      path: UserRoute.Avatar,
       method: HttpMethod.Post,
       handler: this.uploadAvatar,
       middlewares: [
@@ -113,7 +113,7 @@ export default class UserController extends Controller {
       { email: user.email, id: user.id}
     );
 
-    this.ok(res, fillDTO(LoggedUserResponse, {token}));
+    this.ok(res, {token});
   }
 
   async get(req: Request, res: Response): Promise<void> {
@@ -126,7 +126,7 @@ export default class UserController extends Controller {
     }
 
     const user = await this.userService.findByEmail(req.user.email);
-    this.ok(res, fillDTO(LoggedUserResponse, user));
+    this.ok(res, {...fillDTO(LoggedUserResponse, user), token: req.headers.authorization?.split(' ')[1]});
   }
 
   async getToWatch(req: Request<Record<string, unknown>, Record<string, unknown>>, _res: Response): Promise<void> {

@@ -3,6 +3,7 @@ import {ValidationError} from 'class-validator';
 import crypto from 'crypto';
 import * as jose from 'jose';
 import {DEFAULT_STATIC_IMAGES} from '../app/application.contants.js';
+import {DEFAULT_MOVIE_BACKGROUND_IMAGES, DEFAULT_MOVIE_POSTER_IMAGES} from '../modules/movie/movie.models.js';
 import {getGenre} from '../types/genre.type.js';
 import {ServiceError} from '../types/service-error.enum.js';
 import {ValidationErrorField} from '../types/validation-error-field.type.js';
@@ -100,7 +101,11 @@ export const transformProperty = (
 
 export const transformObject = (properties: string[], staticPath: string, uploadPath: string, data: Record<string, unknown>) => {
   properties.forEach((property) => transformProperty(property, data, (target: Record<string, unknown>) => {
-    const rootPath = DEFAULT_STATIC_IMAGES.includes(`${target[property]}`) ? staticPath : uploadPath;
+    const rootPath = [
+      ...DEFAULT_STATIC_IMAGES,
+      ...DEFAULT_MOVIE_POSTER_IMAGES,
+      ...DEFAULT_MOVIE_BACKGROUND_IMAGES
+    ].includes(`${target[property]}`) ? staticPath : uploadPath;
     target[property] = `${rootPath}/${target[property]}`;
   }));
 };

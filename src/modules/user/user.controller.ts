@@ -5,6 +5,7 @@ import {ConfigInterface} from '../../common/config/config.interface.js';
 import {Controller} from '../../common/controller/controller.js';
 import HttpError from '../../common/errors/http-error.js';
 import {LoggerInterface} from '../../common/logger/logger.interface.js';
+import {MultipartFromDataMiddleware} from '../../middlewares/multipart-form-data.middleware.js';
 import {PrivateRouteMiddleware} from '../../middlewares/private-route.middleware.js';
 import {UploadFileMiddleware} from '../../middlewares/upload-file.middleware.js';
 import {ValidateDtoMiddleware} from '../../middlewares/validate-dto.middleware.js';
@@ -12,7 +13,7 @@ import {ValidateObjectIdMiddleware} from '../../middlewares/validate-objectid.mi
 import {COMPONENT} from '../../types/component.type.js';
 import {HttpMethod} from '../../types/http-method.enum.js';
 import {createJWT, fillDTO} from '../../utils/common-functions.js';
-import MovieResponse from '../movie/response/movie.response.js';
+import MovieListItemResponse from '../movie/response/movie-list-item.response.js';
 import CreateUserDto from './dto/create-user.dto.js';
 import LoginUserDto from './dto/login-user.dto.js';
 import LoggedUserResponse from './response/logged-user.response.js';
@@ -23,8 +24,8 @@ import {JWT_ALGORITHM, UserRoute} from './user.models.js';
 @injectable()
 export default class UserController extends Controller {
   constructor(@inject(COMPONENT.LoggerInterface) logger: LoggerInterface,
-    @inject(COMPONENT.UserServiceInterface) private readonly userService: UserServiceInterface,
-    @inject(COMPONENT.ConfigInterface) private readonly configService: ConfigInterface) {
+              @inject(COMPONENT.UserServiceInterface) private readonly userService: UserServiceInterface,
+              @inject(COMPONENT.ConfigInterface) private readonly configService: ConfigInterface) {
     super(logger);
     this.logger.info('Register routes for UserController.');
 
@@ -32,7 +33,10 @@ export default class UserController extends Controller {
       path: UserRoute.REGISTER,
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateUserDto)]
+      middlewares: [
+        new MultipartFromDataMiddleware(this.configService.get('UPLOAD_DIRECTORY')),
+        new ValidateDtoMiddleware(CreateUserDto),
+      ]
     });
     this.addRoute<UserRoute>({
       path: UserRoute.LOGIN,
@@ -65,20 +69,32 @@ export default class UserController extends Controller {
       handler: this.uploadAvatar,
       middlewares: [
         new ValidateObjectIdMiddleware('userId'),
-        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+        new UploadFileMiddleware( 'avatar', this.userService, this.configService.get('UPLOAD_DIRECTORY'))
       ]
     });
   }
 
-  async create({body}: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>, res: Response): Promise<void> {
+  async create(req: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>, res: Response): Promise<void> {
+    const {body} = req;
     const existsUser = await this.userService.findByEmail(body.email);
 
     if (existsUser) {
-      throw new HttpError(StatusCodes.CONFLICT, `User with email «${body.email}» exists.`, 'UserController');
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        `User with email «${body.email}» exists.`,
+        'UserController');
     }
 
     const result = await this.userService.create(body, this.configService.get('SALT'));
-    this.created(res, fillDTO(UserResponse, result));
+    const createdUser: UserResponse = result;
+
+    if (req.file) {
+      const avatarPath = req.file.path.slice(1);
+      await this.userService.setUserAvatarPath(result.id, avatarPath);
+      createdUser.avatarPath = avatarPath;
+    }
+
+    this.created(res, fillDTO(UserResponse, createdUser));
   }
 
   async login({body}: Request<Record<string, unknown>, Record<string, unknown>, LoginUserDto>, res: Response): Promise<void> {
@@ -98,7 +114,7 @@ export default class UserController extends Controller {
       { email: user.email, id: user.id}
     );
 
-    this.ok(res, fillDTO(LoggedUserResponse, {email: user.email, token}));
+    this.ok(res, fillDTO(LoggedUserResponse, {token}));
   }
 
   async get(req: Request, res: Response): Promise<void> {
@@ -109,7 +125,7 @@ export default class UserController extends Controller {
   async getToWatch(req: Request<Record<string, unknown>, Record<string, unknown>>, _res: Response): Promise<void> {
     const {user} = req;
     const result = await this.userService.findToWatch(user.id);
-    this.ok(_res, fillDTO(MovieResponse, result));
+    this.ok(_res, fillDTO(MovieListItemResponse, result));
   }
 
   async postToWatch(req: Request<Record<string, unknown>, Record<string, unknown>, { movieId: string }>, _res: Response): Promise<void> {
@@ -125,8 +141,12 @@ export default class UserController extends Controller {
   }
 
   async uploadAvatar(req: Request, res: Response) {
-    this.created(res, {
-      filepath: req.file?.path
-    });
+    const createdFilePath = req.file?.path;
+    if (createdFilePath) {
+      await this.userService.setUserAvatarPath(req.params.userId, createdFilePath);
+      this.created(res, {
+        filepath: createdFilePath
+      });
+    }
   }
 }

@@ -26,13 +26,13 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   @prop()
   public avatarPath?: string;
 
-  @prop({required: true, default: ''})
+  @prop({required: true})
   public name!: string;
 
   @prop({required: true, default: []})
   public moviesToWatch!: string[];
 
-  @prop({required: true, default: ''})
+  @prop({required: true})
   private password!: string;
 
   setPassword(password: string, salt: string) {

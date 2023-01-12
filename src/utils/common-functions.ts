@@ -19,7 +19,6 @@ export const createMovie = (row: string) => {
     durationInMinutes,
     userName,
     email,
-    avatarPath,
     posterPath,
     backgroundImagePath,
     backgroundColor
@@ -37,7 +36,7 @@ export const createMovie = (row: string) => {
     director,
     durationInMinutes: Number(durationInMinutes),
     commentsCount: 0,
-    user: {email, name: userName, avatarPath},
+    user: {email, name: userName},
     posterPath,
     backgroundImagePath,
     backgroundColor
@@ -53,7 +52,7 @@ export const checkPassword = (password: string) => {
 export const createSHA256 = (line: string, salt: string): string => crypto.createHmac('sha256', salt).update(line).digest('hex');
 
 export const fillDTO = <T, V>(someDto: ClassConstructor<T>, plainObject: V) =>
-  plainToInstance(someDto, plainObject, {excludeExtraneousValues: true});
+  plainToInstance(someDto, plainObject, {excludeExtraneousValues: true, enableImplicitConversion: true});
 
 export const createErrorObject = (message: string) => ({
   error: message,

@@ -25,6 +25,14 @@ export default class UserService implements UserServiceInterface {
     return result;
   }
 
+  async findById(userId: string): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findById(userId);
+  }
+
+  async setUserAvatarPath(userId: string, avatarPath: string): Promise<void | null> {
+    return this.userModel.findByIdAndUpdate(userId, {avatarPath});
+  }
+
   async findByEmail(email: string): Promise<DocumentType<UserEntity> | null> {
     return this.userModel.findOne({email});
   }
@@ -41,7 +49,7 @@ export default class UserService implements UserServiceInterface {
 
   async findToWatch(userId: string): Promise<DocumentType<MovieEntity>[]> {
     const moviesToWatch = await this.userModel.findById(userId).select('moviesToWatch');
-    return this.movieModel.find({_id: { $in: moviesToWatch?.moviesToWatch }});
+    return this.movieModel.find({_id: { $in: moviesToWatch?.moviesToWatch }}).populate('user');
   }
 
   async addToWatch(movieId: string, userId: string): Promise<void | null> {

@@ -4,6 +4,9 @@ import UserResponse from '../../user/response/user.response.js';
 
 export default class MovieListItemResponse {
   @Expose()
+  public id!: string;
+
+  @Expose()
   public title!: string;
 
   @Expose()

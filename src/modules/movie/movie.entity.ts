@@ -13,6 +13,9 @@ export interface MovieEntity extends defaultClasses.Base {}
   }
 })
 export class MovieEntity extends defaultClasses.TimeStamps {
+  @prop({trim: true})
+  public id!: string;
+
   @prop({trim: true, required: true, minlength: 2, maxlength: 100})
   public title!: string;
 

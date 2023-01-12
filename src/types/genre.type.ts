@@ -17,13 +17,13 @@ export function getGenre(value: string): TGenre | never {
 }
 
 export enum GenreEnum {
-  COMEDY = 'comedy',
-  CRIME = 'crime',
-  DOCUMENTARY = 'documentary',
-  DRAMA = 'drama',
-  HORROR = 'horror',
-  FAMILY = 'family',
-  ROMANCE = 'romance',
-  SCIFI = 'scifi',
-  THRILLER = 'thriller'
+  Comedy = 'comedy',
+  Crime = 'crime',
+  Documentary = 'documentary',
+  Drama = 'drama',
+  Horror = 'horror',
+  Family = 'family',
+  Romance = 'romance',
+  Scifi = 'scifi',
+  Thriller = 'thriller'
 }

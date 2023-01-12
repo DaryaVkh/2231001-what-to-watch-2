@@ -27,12 +27,12 @@ export default class ExceptionFilter implements ExceptionFilterInterface {
 
   private handleHttpError(error: HttpError, _req: Request, res: Response, _next: NextFunction) {
     this.logger.error(`[${error.detail}]: ${error.httpStatusCode} — ${error.message}`);
-    res.status(error.httpStatusCode).json(createErrorObject(ServiceError.COMMON_ERROR, error.message));
+    res.status(error.httpStatusCode).json(createErrorObject(ServiceError.CommonError, error.message));
   }
 
   private handleOtherError(error: Error, _req: Request, res: Response, _next: NextFunction) {
     this.logger.error(error.message);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(createErrorObject(ServiceError.SERVICE_ERROR, error.message));
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(createErrorObject(ServiceError.ServiceError, error.message));
   }
 
   private handleValidationError(error: ValidationError, _req: Request, res: Response, _next: NextFunction) {
@@ -41,6 +41,6 @@ export default class ExceptionFilter implements ExceptionFilterInterface {
       (errorField) => this.logger.error(`[${errorField.property}] — ${errorField.messages}`)
     );
 
-    res.status(StatusCodes.BAD_REQUEST).json(createErrorObject(ServiceError.VALIDATION_ERROR, error.message, error.details));
+    res.status(StatusCodes.BAD_REQUEST).json(createErrorObject(ServiceError.ValidationError, error.message, error.details));
   }
 }

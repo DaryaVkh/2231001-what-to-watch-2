@@ -9,11 +9,12 @@ export class AuthenticateMiddleware implements MiddlewareInterface {
 
   async execute(req: Request, _res: Response, next: NextFunction): Promise<void> {
     const authorizationHeader = req.headers?.authorization?.split(' ');
-    if (!authorizationHeader) {
+    const xToken: string | undefined = req.headers?.['x-token']?.toString();
+    if (!authorizationHeader && !xToken) {
       return next();
     }
 
-    const [, token] = authorizationHeader;
+    const token = authorizationHeader ? authorizationHeader[1] : (xToken ?? '');
 
     try {
       const {payload} = await jose.jwtVerify(token, new TextEncoder().encode(this.jwtSecret));

@@ -26,6 +26,7 @@ export default class MovieService implements MovieServiceInterface {
 
   async find(limit?: number): Promise<DocumentType<MovieEntity>[]> {
     const movies = await this.movieModel.aggregate([
+      {$addFields: {id: {$toString: '$_id'}}},
       {$sort: {publishingDate: 1}},
       {$limit: limit || MAX_MOVIES_COUNT}
     ]);
@@ -41,7 +42,13 @@ export default class MovieService implements MovieServiceInterface {
   }
 
   async findByGenre(genre: TGenre, limit?: number): Promise<DocumentType<MovieEntity>[]> {
-    return this.movieModel.find({genre}, {}, {limit}).populate('user');
+    const movies = await this.movieModel.aggregate([
+      {$match: {genre}},
+      {$addFields: {id: {$toString: '$_id'}}},
+      {$sort: {publishingDate: 1}},
+      {$limit: limit || MAX_MOVIES_COUNT}
+    ]);
+    return this.movieModel.populate(movies, 'user');
   }
 
   async findPromo(): Promise<DocumentType<MovieEntity> | null> {

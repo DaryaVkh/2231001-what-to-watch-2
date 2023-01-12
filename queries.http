@@ -5,7 +5,7 @@
 POST http://localhost:4200/movies/create HTTP/1.1
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InBoaWxpcHBAbWFpbC5ydSIsImlkIjoiNjNhOGMyMDRjYmM5ZjMwM2Y5MjVmMGMwIiwiaWF0IjoxNjczNDU0MzMyLCJleHAiOjE2NzM2MjcxMzJ9.74NqIHKmsNNScCvPyd-Q4x__0F6E6ppVI-jG3oZUjr8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InN1bkBtYWlsLnJ1IiwiaWQiOiI2M2MwMTgxMzViN2ZjNWM3OGVjNTgwOTkiLCJpYXQiOjE2NzM1NTE0MjUsImV4cCI6MTY3MzcyNDIyNX0.0pSV9wNbnw9t5_yrtGFQpWVqfZzkLrtM8vswN94EVcg
 
 {
   "title": "Голодные игры",
@@ -91,7 +91,7 @@ Accept: application/json
 ## Получить список фильмов «К просмотру»
 GET http://localhost:4200/users/to_watch HTTP/1.1
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5ydSIsImlkIjoiNjNiZGM5MWU2OTk5OTY5YWY2MmI3MTBhIiwiaWF0IjoxNjczNDgwNTEyLCJleHAiOjE2NzM2NTMzMTJ9.hbxFnkOA3q99Ob2UVricBjd0l80WB-MgUpMGe4VVUtk
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InN1bkBtYWlsLnJ1IiwiaWQiOiI2M2MwMTgxMzViN2ZjNWM3OGVjNTgwOTkiLCJpYXQiOjE2NzM1NTE0MjUsImV4cCI6MTY3MzcyNDIyNX0.0pSV9wNbnw9t5_yrtGFQpWVqfZzkLrtM8vswN94EVcg
 
 ###
 
@@ -99,10 +99,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5ydSIsImlkI
 POST http://localhost:4200/users/to_watch HTTP/1.1
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5ydSIsImlkIjoiNjNiZGM5MWU2OTk5OTY5YWY2MmI3MTBhIiwiaWF0IjoxNjczNDgwNTEyLCJleHAiOjE2NzM2NTMzMTJ9.hbxFnkOA3q99Ob2UVricBjd0l80WB-MgUpMGe4VVUtk
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InN1bkBtYWlsLnJ1IiwiaWQiOiI2M2MwMTgxMzViN2ZjNWM3OGVjNTgwOTkiLCJpYXQiOjE2NzM1NTE0MjUsImV4cCI6MTY3MzcyNDIyNX0.0pSV9wNbnw9t5_yrtGFQpWVqfZzkLrtM8vswN94EVcg
 
 {
-  "movieId": "63bf39c669e4b4d4bf20a1e5"
+  "movieId": "63c05f12cb79bbe1c0877ffa"
 }
 
 ###
@@ -168,7 +168,7 @@ Content-Type: image/png
 ###
 
 ## Отправка аватарки пользователя
-POST http://localhost:4200/users/63a8c204cbc9f303f925f0c0/avatar HTTP/1.1
+POST http://localhost:4200/users/63c018135b7fc5c78ec58099/avatar HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -185,7 +185,7 @@ POST http://localhost:4200/users/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "user@mail.ru",
+  "email": "sun@mail.ru",
   "password": "123456"
 }
 
@@ -193,4 +193,4 @@ Content-Type: application/json
 
 ## Проверка токена пользователя
 GET http://localhost:4200/users/login HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InBoaWxpcHBAbWFpbC5ydSIsImlkIjoiNjNhOGMyMDRjYmM5ZjMwM2Y5MjVmMGMwIiwiaWF0IjoxNjczNDU0MzMyLCJleHAiOjE2NzM2MjcxMzJ9.74NqIHKmsNNScCvPyd-Q4x__0F6E6ppVI-jG3oZUjr8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InN1bkBtYWlsLnJ1IiwiaWQiOiI2M2MwMTgxMzViN2ZjNWM3OGVjNTgwOTkiLCJpYXQiOjE2NzM1NTE0MjUsImV4cCI6MTY3MzcyNDIyNX0.0pSV9wNbnw9t5_yrtGFQpWVqfZzkLrtM8vswN94EVcg
